@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JUDSON PAY 2.0</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #eef3fb;
+  color: #18345d;
+}
+
+header {
+  background: linear-gradient(120deg,#0755c9,#092b68);
+  color: white;
+  padding: 22px;
+  text-align: center;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 27px;
+  letter-spacing: 1px;
+}
+
+.container {
+  max-width: 480px;
+  margin: 22px auto;
+  padding: 14px;
+}
+
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 16px #12345b12;
+}
+
+h2 {
+  color: #0755c9;
+  font-size: 21px;
+}
+
+input, select {
+  width: 100%;
+  padding: 14px;
+  margin: 7px 0;
+  border: 1px solid #d0dced;
+  border-radius: 9px;
+  font-size: 15px;
+  background: white;
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 9px;
+  border: none;
+  border-radius: 9px;
+  background: #0755c9;
+  color: white;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+button.secondary {
+  background: #e6efff;
+  color: #0755c9;
+}
+
+button.danger {
+  background: #c62828;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.balance {
+  background: linear-gradient(120deg,#0755c9,#092b68);
+  color: white;
+  padding: 23px;
+  border-radius: 15px;
+}
+
+.balance h2 {
+  color: white;
+  font-size: 28px;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+}
+
+.actions button {
+  margin: 0;
+}
+
+.virtual-card {
+  background: linear-gradient(130deg,#0874df,#09275c);
+  color: white;
+  border-radius: 16px;
+  padding: 22px;
+  min-height: 190px;
+  box-shadow: 0 6px 15px #12345b30;
+}
+
+.virtual-card h2 {
+  color: white;
+  letter-spacing: 2px;
+}
+
+.notice {
+  font-size: 12px;
+  color: #64748b;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.item {
+  padding: 12px 0;
+  border-bottom: 1px solid #e7edf5;
+  overflow-wrap: anywhere;
+}
+
+.top-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.top-actions button {
+  flex: 1;
+}
+
+#toast {
+  position: fixed;
+  bottom: 20px;
+  left: 5%;
+  width: 90%;
+  background: #092b68;
+  color: white;
+  padding: 16px;
+  border-radius: 12px;
+  text-align: center;
+  display: none;
+  z-index: 10;
+}
+
+#notificationPanel {
+  background: #f0f5ff;
+  padding: 12px;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>JUDSON PAY</h1>
+  <p>O seu banco digital</p>
+</header>
+
+<div class="container">
+
+<section id="login" class="card">
+  <h2>Bem-vindo ao JUDSON PAY</h2>
+  <p>Entre na sua conta.</p>
+
+  <input id="loginPhone" type="tel"
+    placeholder="Número de telefone">
+
+  <input id="loginPassword" type="password"
+    placeholder="Palavra-passe">
+
+  <button onclick="login()">Entrar</button>
+
+  <button class="secondary" onclick="showRegister()">
+    Criar conta
+  </button>
+
+  <p class="notice">
+    Utilize apenas dados fictícios nesta demonstração.
+  </p>
+</section>
+
+<section id="register" class="card hidden">
+  <h2>Criar conta</h2>
+
+  <input id="newName" placeholder="Nome completo">
+  <input id="newPhone" type="tel"
+    placeholder="Número de telefone">
+  <input id="newPassword" type="password"
+    placeholder="Criar palavra-passe">
+  <input id="confirmPassword" type="password"
+    placeholder="Confirmar palavra-passe">
+
+  <button onclick="register()">Registar</button>
+
+  <button class="secondary" onclick="showLogin()">
+    Voltar
+  </button>
+</section>
+
+<section id="dashboard" class="hidden">
+
+  <div class="card">
+    <h2>Olá, <span id="clientName">Cliente</span>!</h2>
+
+    <div class="top-actions">
+      <button onclick="toggleNotifications()">🔔 Notificações</button>
+      <button class="secondary" onclick="toggleBalance()">👁 Saldo</button>
+    </div>
+
+    <div id="notificationPanel" class="hidden">
+      <strong>As tuas notificações</strong>
+      <div id="notifications"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="balance">
+      <p>Saldo disponível</p>
+      <h2 id="balance">50.000,00 Kz</h2>
+      <p>JUDSON PAY</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Operações bancárias</h2>
+
+    <input id="amount" type="number"
+      min="1" step="0.01"
+      placeholder="Valor em Kz">
+
+    <div class="actions">
+      <button onclick="deposit()">Depositar</button>
+      <button onclick="withdraw()">Levantar</button>
+    </div>
+
+    <button onclick="transfer()">Transferir dinheiro</button>
+  </div>
+
+  <div class="card">
+    <h2>O meu cartão virtual</h2>
+
+    <div class="virtual-card">
+      <h3>JUDSON PAY</h3>
+      <p>CARTÃO VIRTUAL DE DEMONSTRAÇÃO</p>
+      <h2>**** **** **** 2026</h2>
+      <p>TITULAR: <span id="cardName">CLIENTE</span></p>
+      <p>VALIDADE: 12/30</p>
+      <p>TIPO: VIRTUAL</p>
+    </div>
+
+    <p class="notice">
+      Cartão fictício. Não permite pagamentos reais.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>Histórico de operações</h2>
+    <div id="history"></div>
+    <button class="secondary" onclick="clearHistory()">
+      Limpar histórico
+    </button>
+  </div>
+
+  <div class="card">
+    <h2>Segurança e conta</h2>
+
+    <button onclick="changePassword()">
+      Alterar palavra-passe
+    </button>
+
+    <button class="secondary" onclick="showProfile()">
+      Consultar perfil
+    </button>
+
+    <button class="danger" onclick="logout()">
+      Sair da conta
+    </button>
+  </div>
+
+  <p class="notice">
+    JUDSON PAY 2.0 — Protótipo de demonstração.
+    Não está ligado a bancos ou sistemas de pagamentos reais.
+  </p>
+
+</section>
+</div>
+
+<div id="toast"></div>
+  
+<script>
+
+// DADOS DA APLICAÇÃO
+
+let user = JSON.parse(localStorage.getItem("jpUser") || "null");
+let balance = Number(localStorage.getItem("jpBalance") || 50000);
+let historyData = JSON.parse(localStorage.getItem("jpHistory") || "[]");
+let notificationData = JSON.parse(localStorage.getItem("jpNotifications") || "[]");
+let currentUser = null;
+let balanceVisible = true;
+
+function saveData() {
+  localStorage.setItem("jpBalance", balance);
+  localStorage.setItem("jpHistory", JSON.stringify(historyData));
+  localStorage.setItem("jpNotifications", JSON.stringify(notificationData));
+}
+
+function money(value) {
+  return Number(value).toLocaleString("pt-PT", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }) + " Kz";
+}
+
+function toast(message) {
+  let box = document.getElementById("toast");
+  box.textContent = message;
+  box.style.display = "block";
+
+  setTimeout(function() {
+    box.style.display = "none";
+  }, 3000);
+}
+
+// NAVEGAÇÃO
+
+function showLogin() {
+  document.getElementById("login").classList.remove("hidden");
+  document.getElementById("register").classList.add("hidden");
+  document.getElementById("dashboard").classList.add("hidden");
+}
+
+function showRegister() {
+  document.getElementById("login").classList.add("hidden");
+  document.getElementById("register").classList.remove("hidden");
+  document.getElementById("dashboard").classList.add("hidden");
+}
+
+// CRIAR CONTA
+
+function register() {
+  let name = document.getElementById("newName").value.trim();
+  let phone = document.getElementById("newPhone").value.trim();
+  let password = document.getElementById("newPassword").value;
+  let confirm = document.getElementById("confirmPassword").value;
+
+  if (!name || !phone || !password || !confirm) {
+    alert("Preencha todos os campos.");
+    return;
+  }
+
+  if (password.length < 4) {
+    alert("A palavra-passe deve ter pelo menos 4 caracteres.");
+    return;
+  }
+
+  if (password !== confirm) {
+    alert("As palavras-passe não coincidem.");
+    return;
+  }
+
+  user = {
+    name: name,
+    phone: phone,
+    password: password
+  };
+
+  localStorage.setItem("jpUser", JSON.stringify(user));
+  localStorage.setItem("jpAttempts", "0");
+  localStorage.removeItem("jpLock");
+
+  balance = 50000;
+  historyData = [];
+  notificationData = [];
+
+  saveData();
+
+  document.getElementById("loginPhone").value = phone;
+  document.getElementById("loginPassword").value = "";
+
+  alert("Conta de demonstração criada com sucesso!");
+  showLogin();
+}
+
+// INICIAR SESSÃO
+
+function login() {
+  user = JSON.parse(localStorage.getItem("jpUser") || "null");
+
+  if (!user) {
+    alert("Crie uma conta primeiro.");
+    showRegister();
+    return;
+  }
+
+  let lockUntil = Number(localStorage.getItem("jpLock") || 0);
+
+  if (Date.now() < lockUntil) {
+    let seconds = Math.ceil((lockUntil - Date.now()) / 1000);
+    alert("Conta temporariamente bloqueada. Aguarde " + seconds + " segundos.");
+    return;
+  }
+
+  let phone = document.getElementById("loginPhone").value.trim();
+  let password = document.getElementById("loginPassword").value;
+
+  if (phone === user.phone && password === user.password) {
+    localStorage.setItem("jpAttempts", "0");
+    localStorage.removeItem("jpLock");
+
+    currentUser = user.name;
+
+    document.getElementById("clientName").textContent = currentUser;
+    document.getElementById("cardName").textContent = currentUser.toUpperCase();
+
+    document.getElementById("login").classList.add("hidden");
+    document.getElementById("register").classList.add("hidden");
+    document.getElementById("dashboard").classList.remove("hidden");
+
+    updateBalance();
+    renderHistory();
+    renderNotifications();
+
+    toast("Bem-vindo ao JUDSON PAY!");
+  } else {
+    let attempts = Number(localStorage.getItem("jpAttempts") || 0) + 1;
+    localStorage.setItem("jpAttempts", attempts);
+
+    if (attempts >= 5) {
+      localStorage.setItem("jpLock", Date.now() + 60000);
+      localStorage.setItem("jpAttempts", "0");
+      alert("Demasiadas tentativas. Bloqueio de demonstração por 60 segundos.");
+    } else {
+      alert("Dados incorrectos. Tentativa " + attempts + " de 5.");
+    }
+  }
+}
+
+// SAIR DA CONTA
+
+function logout() {
+  currentUser = null;
+  document.getElementById("loginPassword").value = "";
+  showLogin();
+  toast("Sessão terminada.");
+}
+
+// SALDO
+
+function updateBalance() {
+  document.getElementById("balance").textContent =
+    balanceVisible ? money(balance) : "••••••••";
+  saveData();
+}
+
+function toggleBalance() {
+  balanceVisible = !balanceVisible;
+  updateBalance();
+}
+
+// VALOR DAS OPERAÇÕES
+
+function getAmount() {
+  let value = Number(document.getElementById("amount").value);
+
+  if (!Number.isFinite(value) || value <= 0) {
+    alert("Introduza um valor válido.");
+    return 0;
+  }
+
+  return value;
+}
+
+// HISTÓRICO
+
+function addHistory(message) {
+  historyData.unshift({
+    message: message,
+    date: new Date().toLocaleString("pt-PT")
+  });
+
+  if (historyData.length > 50) {
+    historyData.pop();
+  }
+
+  saveData();
+  renderHistory();
+}
+
+function renderHistory() {
+  let box = document.getElementById("history");
+  box.innerHTML = "";
+
+  if (historyData.length === 0) {
+    box.textContent = "Ainda não existem operações.";
+    return;
+  }
+
+  historyData.forEach(function(item) {
+    let div = document.createElement("div");
+    div.className = "item";
+
+    let strong = document.createElement("strong");
+    strong.textContent = item.message;
+
+    let small = document.createElement("div");
+    small.className = "notice";
+    small.textContent = item.date;
+
+    div.appendChild(strong);
+    div.appendChild(small);
+    box.appendChild(div);
+  });
+}
+
+function clearHistory() {
+  if (!confirm("Queres apagar o histórico desta demonstração?")) return;
+
+  historyData = [];
+  saveData();
+  renderHistory();
+  toast("Histórico limpo.");
+}
+
+// NOTIFICAÇÕES
+
+function notify(message) {
+  notificationData.unshift({
+    message: message,
+    date: new Date().toLocaleString("pt-PT")
+  });
+
+  if (notificationData.length > 30) {
+    notificationData.pop();
+  }
+
+  saveData();
+  renderNotifications();
+  toast(message);
+}
+
+function renderNotifications() {
+  let box = document.getElementById("notifications");
+  box.innerHTML = "";
+
+  if (notificationData.length === 0) {
+    box.textContent = "Não tens notificações.";
+    return;
+  }
+
+  notificationData.forEach(function(item) {
+    let div = document.createElement("div");
+    div.className = "item";
+
+    let message = document.createElement("div");
+    message.textContent = "🔔 " + item.message;
+
+    let date = document.createElement("small");
+    date.textContent = item.date;
+
+    div.appendChild(message);
+    div.appendChild(date);
+    box.appendChild(div);
+  });
+}
+
+function toggleNotifications() {
+  document.getElementById("notificationPanel").classList.toggle("hidden");
+}
+</script>
+
+<script>
+function deposit() {
+    const value = getAmount();
+
+    if (!value || value <= 0) {
+        toast("Introduza um valor válido.");
+        return;
+    }
+
+    balance += value;
+    updateBalance();
+    addHistory("Depósito", value);
+    saveData();
+
+    toast("Depósito realizado com sucesso!");
+    document.getElementById("amount").value = "";
+}
+
+function withdraw() {
+    const value = getAmount();
+
+    if (!value || value <= 0) {
+        toast("Introduza um valor válido.");
+        return;
+    }
+
+    if (value > balance) {
+        toast("Saldo insuficiente!");
+        return;
+    }
+
+    balance -= value;
+    updateBalance();
+    addHistory("Levantamento", value);
+    saveData();
+
+    toast("Levantamento realizado com sucesso!");
+    document.getElementById("amount").value = "";
+}
+
+function transfer() {
+    const value = getAmount();
+
+    if (!value || value <= 0) {
+        toast("Introduza um valor válido.");
+        return;
+    }
+
+    if (value > balance) {
+        toast("Saldo insuficiente!");
+        return;
+    }
+
+    const destino = prompt("Introduza o número de telefone do destinatário:");
+
+    if (!destino || destino.trim() === "") {
+        toast("Transferência cancelada.");
+        return;
+    }
+
+    const confirmar = confirm(
+        "Transferir " + money(value) + " para " + destino + "?"
+    );
+
+    if (!confirmar) {
+        toast("Transferência cancelada.");
+        return;
+    }
+
+    balance -= value;
+    updateBalance();
+    addHistory("Transferência para " + destino, value);
+    saveData();
+
+    toast("Transferência de demonstração realizada!");
+    document.getElementById("amount").value = "";
+}
+
+function consult() {
+    updateBalance();
+    renderHistory();
+    toast("Saldo atualizado.");
+}
+
+function changePassword() {
+    const novaSenha = prompt("Introduza a nova palavra-passe:");
+
+    if (!novaSenha || novaSenha.trim().length < 4) {
+        toast("A palavra-passe deve ter pelo menos 4 caracteres.");
+        return;
+    }
+
+    if (typeof user !== "undefined" && user) {
+        user.password = novaSenha;
+        saveData();
+        toast("Palavra-passe de demonstração alterada.");
+    } else {
+        toast("Faça login primeiro.");
+    }
+}
+
+function showProfile() {
+    if (typeof user !== "undefined" && user) {
+        alert(
+            "PERFIL JUDSON PAY\n\n" +
+            "Nome: " + (user.name || "Utilizador") + "\n" +
+            "Telefone: " + (user.phone || "Não disponível")
+        );
+    } else {
+        toast("Faça login primeiro.");
+    }
+}
+
+showLogin();
+</script>
+
+</body>
+</html>
